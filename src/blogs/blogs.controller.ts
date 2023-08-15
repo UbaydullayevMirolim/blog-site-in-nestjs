@@ -1,0 +1,52 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseInterceptors,
+  UploadedFile,
+} from '@nestjs/common';
+import { BlogsService } from './blogs.service';
+import { CreateBlogDto } from './dto/create-blog.dto';
+import { UpdateBlogDto } from './dto/update-blog.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+
+@Controller('blogs')
+export class BlogsController {
+  constructor(private readonly blogsService: BlogsService) {}
+
+  @UseInterceptors(FileInterceptor('photo'))
+  @Post()
+  create(
+    @Body() createBlogDto: CreateBlogDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    console.log(file);
+
+    return this.blogsService.create(createBlogDto);
+  }
+
+  @Get()
+  findAll() {
+    return this.blogsService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.blogsService.findOne(+id);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateBlogDto: UpdateBlogDto) {
+    return this.blogsService.update(+id, updateBlogDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.blogsService.remove(+id);
+  }
+}
